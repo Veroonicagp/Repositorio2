@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { AnimationController, InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
+import { AlertController, AnimationController, InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PersonModalComponent } from 'src/app/components/person-modal/person-modal.component';
 import { Paginated } from 'src/app/core/models/paginated.model';
@@ -19,7 +19,8 @@ export class PeoplePage implements OnInit {
   constructor(
     private animationCtrl: AnimationController,
     private peopleSvc:PeopleService,
-    private modalCtrl:ModalController
+    private modalCtrl:ModalController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit(): void {
@@ -135,6 +136,38 @@ export class PeoplePage implements OnInit {
 
   async onAddPerson(){
     await this.presentModalPerson('new');
+  }
+
+  async presentAlert(person:Person) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar',
+      message: 'Desea eliminar a esta persona permanentemente',
+      buttons: [ {
+        text: 'Confirmar',
+        htmlAttributes: {
+          'aria-label': 'close',
+        },
+        handler: () =>{
+          this.peopleSvc.delete(person.id).subscribe({
+            next:res=>{
+              this.refresh();
+            },
+            error:err=>{}
+          });
+        }
+      },
+      {
+        text: 'Salir',
+        htmlAttributes: {
+          'aria-label': 'close',
+        },
+        role: 'cancel',
+        
+      },
+    ],
+    });
+
+    await alert.present();
   }
 
 }
