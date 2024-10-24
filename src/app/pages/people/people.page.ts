@@ -161,8 +161,6 @@ export class PeoplePage implements OnInit {
         htmlAttributes: {
           'aria-label': 'close',
         },
-        role: 'cancel',
-        
       },
     ],
     });
